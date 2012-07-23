@@ -1,0 +1,13 @@
+xp values for monsters, xl for player
+speeds and scheduling
+item and monster probability system scaling with depth
+1, 2, 1.5 handed weapons with/out shield
+pathfinding
+keyboard support for targeting
+ranged/thrown weapons
+saves ref, wil, for
+magic
+wear/wield appropriate items
+
+DICE - negative numbers
+can then remove quick fix from fighter.modifier
