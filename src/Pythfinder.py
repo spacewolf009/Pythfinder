@@ -198,6 +198,7 @@ class Fighter:
         return mod
 
     def take_damage(self, damage, damage_type):
+        assert(not (math.log(damage_type, 2) % 1))
         # apply damage if possible, apply special types of damage
         if not damage_type:
             pass#self.hp -= damage
@@ -215,6 +216,31 @@ class Fighter:
              if self.resists & flags.IMM_GOOD:
                 damage = 0
              elif self.resists & flags.RES_GOOD:
+                damage = damage // 2
+        elif damage_type & flags.DMG_EVIL:
+            if self.resists & flags.IMM_EVIL:
+                damage = 0
+            elif self.resists & flags.RES_EVIL:
+                damage = damage // 2
+        elif damage_type & flags.DMG_SONIC:
+             if self.resists & flags.IMM_SONIC:
+                damage = 0
+             elif self.resists & flags.RES_SONIC:
+                damage = damage // 2
+        elif damage_type & flags.DMG_ELEC:
+             if self.resists & flags.IMM_ELEC:
+                damage = 0
+             elif self.resists & flags.RES_ELEC:
+                damage = damage // 2
+        elif damage_type & flags.DMG_ACID:
+             if self.resists & flags.IMM_ACID:
+                damage = 0
+             elif self.resists & flags.RES_ACID:
+                damage = damage // 2
+        elif damage_type & flags.DMG_POIS:
+             if self.resists & flags.IMM_POIS:
+                damage = 0
+             elif self.resists & flags.RES_POIS:
                 damage = damage // 2
 
         if damage > 0:
