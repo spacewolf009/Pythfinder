@@ -25,8 +25,8 @@ c.execute('''CREATE TABLE weapon_base (
  range int,
  weight int NOT NULL,
  weapon_flags int NOT NULL,
- CHECK (cost >= 0 and damage LIKE "_%" and weapon_flags >= 9)
-	)''')
+ dmg_flags int
+)''')
 
 # c.execute('''CREATE TABLE armour_base''')
 # c.execute('''CREATE TABLE shield_base''')
@@ -43,52 +43,52 @@ c.execute('''CREATE TABLE weapon_base (
 
 weapons = {
 # Simple Light
-'dagger': ('|', 2, '1d4', 19, 2, 10, 1, flags.LIGHT | flags.P),
-'light mace': ('/', 5, '1d6', 20, 2, 0, 4, flags.LIGHT | flags.B),
-'sickle': ('\\', 5, '1d6', 20, 2, 0, 2, flags.LIGHT | flags.S | flags.TRIP),
+'dagger': ('|', 2, '1d4', 19, 2, 10, 1, flags.LIGHT, flags.P),
+'light mace': ('/', 5, '1d6', 20, 2, 0, 4, flags.LIGHT, flags.B),
+'sickle': ('\\', 5, '1d6', 20, 2, 0, 2, flags.LIGHT | flags.TRIP, flags.S),
 # Simple One Handed
-'club': ('/', 0, '1d6', 20, 2, 10, 3, flags.ONEHAND | flags.B),
-'heavy mace': ('/', 12, '1d8', 20, 2, 0, 8, flags.ONEHAND | flags.B),
-'morningstar': ('/', 8, '1d8', 20, 2, 0, 6, flags.ONEHAND | flags.B | flags.P),
-'shortspear': ('|', 1, '1d6', 20, 2, 20, 3, flags.ONEHAND | flags.P),
+'club': ('/', 0, '1d6', 20, 2, 10, 3, flags.ONEHAND, flags.B),
+'heavy mace': ('/', 12, '1d8', 20, 2, 0, 8, flags.ONEHAND, flags.B),
+'morningstar': ('/', 8, '1d8', 20, 2, 0, 6, flags.ONEHAND, flags.B | flags.P),
+'shortspear': ('|', 1, '1d6', 20, 2, 20, 3, flags.ONEHAND, flags.P),
 # Simple Two Handed
-'longspear': ('|', 5, '1d8', 20, 3, 0, 9, flags.TWOHAND | flags.P | flags.REACH), 
-'quarterstaff': ('/', 0, '1d6', 20, 2, 0, 4, flags.TWOHAND | flags.B), 
-'spear': ('|', 2, '1d8', 20, 3, 20, 6, flags.TWOHAND | flags.P), 
+'longspear': ('|', 5, '1d8', 20, 3, 0, 9, flags.TWOHAND | flags.REACH, flags.P), 
+'quarterstaff': ('/', 0, '1d6', 20, 2, 0, 4, flags.TWOHAND, flags.B), 
+'spear': ('|', 2, '1d8', 20, 3, 20, 6, flags.TWOHAND, flags.P), 
 # Simple Ranged
-'blowgun': (')', 2, '1d2', 20, 2, 20, 1, flags.RANGED | flags.P),
-'heavy crossbow': (')', 50, '1d10', 19, 2, 120, 8, flags.RANGED | flags.P),
-'light crossbow': (')', 35, '1d8', 19, 2, 80, 4, flags.RANGED | flags.P),
-'dart': ('(', 0, '1d4', 20, 2, 20, 0.5, flags.RANGED | flags.P),
-'javelin': ('(', 1, '1d6', 20, 2, 30, 2, flags.RANGED | flags.P),
-'sling': (')', 0, '1d4', 20, 2, 50, 0, flags.RANGED | flags.B),
+'blowgun': (')', 2, '1d2', 20, 2, 20, 1, flags.RANGED, flags.P),
+'heavy crossbow': (')', 50, '1d10', 19, 2, 120, 8, flags.RANGED, flags.P),
+'light crossbow': (')', 35, '1d8', 19, 2, 80, 4, flags.RANGED, flags.P),
+'dart': ('(', 0, '1d4', 20, 2, 20, 0.5, flags.RANGED, flags.P),
+'javelin': ('(', 1, '1d6', 20, 2, 30, 2, flags.RANGED, flags.P),
+'sling': (')', 0, '1d4', 20, 2, 50, 0, flags.RANGED, flags.B),
 # Martial Light
-'throwing axe': ('\\', 8, '1d6', 20, 2, 10, 2, flags.LIGHT | flags.S),
-'light hammer': ('/', 1, '1d4', 20, 2, 20, 2, flags.LIGHT | flags.B),
-'hand axe': ('\\', 10, '1d6', 19, 2, 0, 3, flags.LIGHT | flags.S),
-'short sword': ('|', 2, '1d4', 19, 2, 0, 2, flags.LIGHT | flags.P),
+'throwing axe': ('\\', 8, '1d6', 20, 2, 10, 2, flags.LIGHT, flags.S),
+'light hammer': ('/', 1, '1d4', 20, 2, 20, 2, flags.LIGHT, flags.B),
+'hand axe': ('\\', 10, '1d6', 19, 2, 0, 3, flags.LIGHT, flags.S),
+'short sword': ('|', 2, '1d4', 19, 2, 0, 2, flags.LIGHT, flags.P),
 # Martial One Handed
-'longsword': ('|', 15, '1d8', 19, 2, 0, 4, flags.ONEHAND | flags.P | flags.S), 
-'battleaxe': ('\\', 10, '1d8', 20, 3, 0, 6, flags.ONEHAND | flags.S),
-'flail': ('/', 8, '1d8', 20, 2, 0, 5, flags.ONEHAND | flags.B | flags.DISARM | flags.TRIP),
-'rapier': ('|', 20, '1d6', 18, 2, 0, 2, flags.ONEHAND | flags.P),
-'scimitar': ('|', 15, '1d6', 18, 2, 0, 4, flags.ONEHAND | flags.S),
-'trident': ('|', 15, '1d8', 20, 2, 10, 4, flags.ONEHAND | flags.P),
-'warhammer': ('/', 12, '1d8', 20, 3, 0, 5, flags.ONEHAND | flags.B),
+'longsword': ('|', 15, '1d8', 19, 2, 0, 4, flags.ONEHAND, flags.P | flags.S), 
+'battleaxe': ('\\', 10, '1d8', 20, 3, 0, 6, flags.ONEHAND, flags.S),
+'flail': ('/', 8, '1d8', 20, 2, 0, 5, flags.ONEHAND | flags.DISARM | flags.TRIP, flags.B,
+'rapier': ('|', 20, '1d6', 18, 2, 0, 2, flags.ONEHAND, flags.P),
+'scimitar': ('|', 15, '1d6', 18, 2, 0, 4, flags.ONEHAND, flags.S),
+'trident': ('|', 15, '1d8', 20, 2, 10, 4, flags.ONEHAND, flags.P),
+'warhammer': ('/', 12, '1d8', 20, 3, 0, 5, flags.ONEHAND, flags.B),
 # Matial Two Handed
-'falchion': ('|', 75, '2d4', 18, 2, 0, 8, flags.TWOHAND | flags.S),
-'glaive': ('|', 8, '1d10', 20, 3, 0, 10, flags.TWOHAND | flags.S | flags.REACH),
-'greataxe': ('\\', 20, '1d12', 20, 3, 0, 12, flags.TWOHAND | flags.S),
-'greatclub': ('/', 5, '1d10', 20, 2, 0, 8, flags.TWOHAND | flags.B),
+'falchion': ('|', 75, '2d4', 18, 2, 0, 8, flags.TWOHAND, flags.S),
+'glaive': ('|', 8, '1d10', 20, 3, 0, 10, flags.TWOHAND | flags.REACH, flags.S),
+'greataxe': ('\\', 20, '1d12', 20, 3, 0, 12, flags.TWOHAND, flags.S),
+'greatclub': ('/', 5, '1d10', 20, 2, 0, 8, flags.TWOHAND, flags.B),
 'greatsword': ('|', 50, '2d6', 19, 2, 0, 8, flags.TWOHAND | flags.S),
-'heavy flail': ('/', 15, '1d10', 19, 2, 0, 10, flags.TWOHAND | flags.B | flags.DISARM | flags.TRIP),
-'guisarme': ('|', 9, '2d4', 20, 3, 0, 12, flags.TWOHAND | flags.S | flags.REACH | flags.TRIP),
-'halberd': ('|', 10, '1d8', 20, 3, 0, 12, flags.TWOHAND | flags.P | flags.S | flags.BRACE | flags.TRIP),
-'lance': ('|', 10, '1d8', 20, 3, 0, 10, flags.TWOHAND | flags.P | flags.REACH),
-'scythe': ('|', 18, '2d4', 20, 4, 0, 10, flags.TWOHAND | flags.P | flags.S),
+'heavy flail': ('/', 15, '1d10', 19, 2, 0, 10, flags.TWOHAND | flags.DISARM | flags.TRIP, flags.B),
+'guisarme': ('|', 9, '2d4', 20, 3, 0, 12, flags.TWOHAND | flags.REACH | flags.TRIP, flags.S),
+'halberd': ('|', 10, '1d8', 20, 3, 0, 12, flags.TWOHAND | flags.BRACE | flags.TRIP, flags.P | flags.S),
+'lance': ('|', 10, '1d8', 20, 3, 0, 10, flags.TWOHAND | flags.REACH, flags.P),
+'scythe': ('|', 18, '2d4', 20, 4, 0, 10, flags.TWOHAND,  flags.P | flags.S),
 # Martial Ranged
-'longbow': (')', 75, '1d8', 20, 3, 100, 3, flags.RANGED | flags.P),
-'shortbow': (')', 30, '1d6', 20, 3, 60, 2, flags.RANGED | flags.P),
+'longbow': (')', 75, '1d8', 20, 3, 100, 3, flags.RANGED,  flags.P),
+'shortbow': (')', 30, '1d6', 20, 3, 60, 2, flags.RANGED,  flags.P),
 }
 
 for key in weapons.keys():
