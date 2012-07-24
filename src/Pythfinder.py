@@ -9,6 +9,7 @@ import dice
 import map_gen
 import pathfinding
 import item_data
+import flags
 
 DEBUG = True
 # actual size of the window
@@ -173,7 +174,7 @@ def player_move_or_attack(dx, dy):
 
 class Fighter:
     # combat-related properties and methods (monster, player, NPC).
-    def __init__(self, hp, bab, attributes, base_speed=10, death_function=None, equipment=None):
+    def __init__(self, hp, bab, attributes, base_speed=10, death_function=None, equipment=None, resists=0):
         self.max_hp, self.hp, self.bab = hp, hp, bab
         self.attributes, self.base_speed, self.death_function, self.equipment = attributes, base_speed, death_function, {}
         for slot in ['weapon', 'body', 'shield']:
@@ -181,6 +182,7 @@ class Fighter:
                 self.equipment[slot] = equipment[slot]
             else:
                 self.equipment[slot] = None;
+        self.resists = resists
 
     def ac(self):
         return 10 + self.modifier(DEXTERITY) + self.equipment['body'].item.ac_bonus if self.equipment['body'] is not None else 0 + self.equipment['shield'].item.ac_bonus if self.equipment['shield'] is not None else 0
@@ -197,6 +199,24 @@ class Fighter:
 
     def take_damage(self, damage, damage_type):
         # apply damage if possible, apply special types of damage
+        if not damage_type:
+            pass#self.hp -= damage
+        elif damage_type & flags.DMG_FIRE:
+            if self.resists & flags.IMM_FIRE:
+                damage = 0
+            elif self.resists & flags.RES_FIRE:
+                damage = damage // 2
+        elif damage_type & flags.DMG_COLD:
+             if self.resists & flags.IMM_COLD:
+                damage = 0
+             elif self.resists & flags.RES_COLD:
+                damage = damage // 2
+        elif damage_type & flags.DMG_GOOD:
+             if self.resists & flags.IMM_GOOD:
+                damage = 0
+             elif self.resists & flags.RES_GOOD:
+                damage = damage // 2
+
         if damage > 0:
             self.hp -= damage
         # check if the object is dead, if so apply its death function
