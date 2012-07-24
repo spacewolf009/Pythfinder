@@ -140,7 +140,7 @@ def cast_fireball():
                 message(msg1 + obj.name.capitalize() + ' get' + msg2 +' burned for ' + str(FIREBALL_DAMAGE) + ' hit points.', libtcod.orange)
             else:
                 message('You hear a cry of pain')
-            obj.fighter.take_damage(FIREBALL_DAMAGE)
+            obj.fighter.take_damage(FIREBALL_DAMAGE, flags.DMG_FIRE)
     render_all()
     # display code
     for num in range(3):
@@ -198,10 +198,14 @@ class Fighter:
         return mod
 
     def take_damage(self, damage, damage_type):
-        assert(not (math.log(damage_type, 2) % 1))
+        assert(not (math.log(damage_type & 0xFFFFFFF8, 2) % 1))
         # apply damage if possible, apply special types of damage
-        if not damage_type:
-            pass#self.hp -= damage
+        if damage_type & flags.B: # bludgeoning damage
+            pass
+        elif damage_type & flags.P: # Piercing damage
+            pass
+        elif damage_type & flags.S: # Slashing damage
+            pass
         elif damage_type & flags.DMG_FIRE:
             if self.resists & flags.IMM_FIRE:
                 damage = 0
